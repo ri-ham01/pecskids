@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { PictogramImage } from "./pictogram-image";
 import type { PictogramItem } from "@/types";
+import { useArabicTTS } from "@/hooks/use-arabic-tts";
 
 interface PictogramCardProps {
   pictogram: PictogramItem;
@@ -27,10 +28,17 @@ export function PictogramCard({
     data: pictogram,
     disabled: !isDraggable,
   });
+  
+  const { speak } = useArabicTTS();
 
   const style = transform
     ? { transform: CSS.Translate.toString(transform) }
     : undefined;
+
+  const handleClick = () => {
+    speak(pictogram.labelAr);
+    onClick?.();
+  };
 
   return (
     <motion.button
@@ -38,7 +46,7 @@ export function PictogramCard({
       style={style}
       {...(isDraggable ? { ...listeners, ...attributes } : {})}
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       whileHover={isDragging ? undefined : { scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2 }}
