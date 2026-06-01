@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 33% 96%;
+    --foreground: 0 0% 13%;
+    --primary: 122 39% 49%;
+    --accent: 36 100% 50%;
+    --card: 0 0% 100%;
+    --border: 0 0% 88%;
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 18%;
+    --border: 0 0% 25%;
+  }
+
+  .high-contrast {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --primary: 120 100% 25%;
+    --border: 0 0% 0%;
+  }
+
+  .high-contrast.dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --primary: 120 100% 50%;
+    --border: 0 0% 100%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-arabic antialiased;
+    font-feature-settings: "kern" 1;
+  }
+
+  .reduce-motion *,
+  .reduce-motion *::before,
+  .reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .large-text {
+    font-size: 1.125rem;
+  }
+
+  .large-text .text-lg {
+    font-size: 1.375rem;
+  }
+
+  .large-text .text-xl {
+    font-size: 1.5rem;
+  }
+
+  .large-text .text-2xl {
+    font-size: 1.875rem;
+  }
+
+  .large-text .text-3xl {
+    font-size: 2.25rem;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+@layer components {
+  .touch-target {
+    @apply min-h-touch min-w-touch flex items-center justify-center;
+  }
+
+  .calm-card {
+    @apply bg-card rounded-calm-lg shadow-calm border border-border/50;
+  }
+
+  .calm-button {
+    @apply touch-target rounded-calm-lg font-semibold text-lg transition-opacity duration-300;
+  }
+
+  .sentence-strip {
+    @apply flex gap-3 overflow-x-auto pb-2 scroll-smooth;
+    scrollbar-width: thin;
+  }
+
+  .sentence-strip::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .sentence-strip::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

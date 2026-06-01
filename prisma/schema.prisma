@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PARENT
+  ADMIN
+  THERAPIST
+}
+
+model User {
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  email         String         @unique
+  name          String?
+  role          UserRole       @default(PARENT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  childProfiles ChildProfile[]
+  settings      Settings?
+  favorites     FavoriteSentence[]
+}
+
+model ChildProfile {
+  id               String            @id @default(cuid())
+  name             String
+  avatarUrl        String?
+  birthDate        DateTime?
+  notes            String?
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  sentenceHistory  SentenceHistory[]
+  favoriteSentences FavoriteSentence[]
+
+  @@index([userId])
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  nameAr      String
+  slug        String      @unique
+  iconUrl     String?
+  color       String      @default("#4CAF50")
+  sortOrder   Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  pictograms  Pictogram[]
+
+  @@index([slug])
+}
+
+model Pictogram {
+  id          String    @id @default(cuid())
+  labelAr     String
+  imageUrl    String
+  audioUrl    String?
+  keywords    String[]  @default([])
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  isCustom    Boolean   @default(false)
+  uploadedBy  String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([categoryId])
+  @@index([labelAr])
+}
+
+model SentenceHistory {
+  id             String       @id @default(cuid())
+  sentenceAr     String
+  pictogramIds   String[]
+  childProfileId String
+  childProfile   ChildProfile @relation(fields: [childProfileId], references: [id], onDelete: Cascade)
+  spokenAt       DateTime     @default(now())
+
+  @@index([childProfileId])
+  @@index([spokenAt])
+}
+
+model FavoriteSentence {
+  id             String        @id @default(cuid())
+  title          String?
+  sentenceAr     String
+  pictogramIds   String[]
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  childProfileId String?
+  childProfile   ChildProfile? @relation(fields: [childProfileId], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+model Settings {
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voiceRate       Float   @default(0.9)
+  voicePitch      Float   @default(1.0)
+  voiceVolume     Float   @default(1.0)
+  highContrast    Boolean @default(false)
+  reduceMotion    Boolean @default(false)
+  largeText       Boolean @default(false)
+  darkMode        Boolean @default(false)
+  activeChildId   String?
+}
